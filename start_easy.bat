@@ -1,4 +1,2 @@
 @echo off
-title Xiong Xiong Lock Screen - EASY
-python "%~dp0lock_screen.py" --level easy
-pause
+start "" pythonw "%~dp0lock_screen.py" --level easy

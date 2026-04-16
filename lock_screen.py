@@ -8,6 +8,7 @@ Usage:
     python lock_screen.py                  # default medium mode
     python lock_screen.py --level easy     # easy mode
     python lock_screen.py --level hard     # hard mode
+    python lock_screen.py --level hard2    # hard2 mode (keyboard only)
 """
 
 import tkinter as tk
@@ -15,6 +16,7 @@ from tkinter import messagebox
 import argparse
 import random
 import string
+import ctypes
 
 
 class LockScreen:
@@ -69,8 +71,10 @@ class LockScreen:
             self._setup_easy()
         elif self.level == "medium":
             self._setup_medium()
-        else:
+        elif self.level == "hard":
             self._setup_hard()
+        else:
+            self._setup_hard2()
 
     def _setup_easy(self):
         """Easy: normal windowed mode, all close methods work."""
@@ -87,10 +91,15 @@ class LockScreen:
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
 
     def _setup_hard(self):
-        """Hard: fullscreen + topmost, Alt+F4 intercepted."""
+        """Hard: fullscreen, Alt+F4 intercepted."""
         self.root.attributes("-fullscreen", True)
-        self.root.attributes("-topmost", True)
         self.root.protocol("WM_DELETE_WINDOW", self._on_hard_close_attempt)
+
+    def _setup_hard2(self):
+        """Hard2: fullscreen + keyboard only, no mouse allowed."""
+        self.root.attributes("-fullscreen", True)
+        self.root.protocol("WM_DELETE_WINDOW", self._on_hard_close_attempt)
+        self.root.config(cursor="none")
 
     # ── UI Construction ──────────────────────────────────────
 
@@ -181,7 +190,7 @@ class LockScreen:
         self.code_label.pack(pady=(20, 25))
 
         # Difficulty indicator
-        level_display = {"easy": "EASY", "medium": "MEDIUM", "hard": "HARD"}
+        level_display = {"easy": "EASY", "medium": "MEDIUM", "hard": "HARD", "hard2": "HARD2"}
         tk.Label(
             main,
             text=f"DIFFICULTY: {level_display[self.level]}",
@@ -199,7 +208,7 @@ class LockScreen:
         self.root.bind("<F1>", self._show_hints)
         self.root.bind("<Escape>", self._on_escape)
 
-        if self.level == "hard":
+        if self.level in ("hard", "hard2"):
             # Secret exit: Ctrl+Shift+Q
             self.root.bind("<Control-Shift-q>", self._secret_exit)
             self.root.bind("<Control-Shift-Q>", self._secret_exit)
@@ -221,9 +230,6 @@ class LockScreen:
         hint_win.geometry(f"{w}x{h}+{(sw - w) // 2}+{(sh - h) // 2}")
         hint_win.resizable(False, False)
         hint_win.grab_set()
-
-        if self.level == "hard":
-            hint_win.attributes("-topmost", True)
 
         # Title
         tk.Label(
@@ -394,6 +400,10 @@ class LockScreen:
         self._animate_progress()
         self._animate_code()
 
+        if self.level == "hard2":
+            self._animate_mouse_hide()
+            self._animate_mouse_move()
+
     def _animate_warning(self):
         """Blink the warning title between red and hidden."""
         if self.congrats_shown:
@@ -455,6 +465,28 @@ class LockScreen:
         except tk.TclError:
             pass
 
+    def _animate_mouse_hide(self):
+        """Hide cursor every 200ms for hard2 mode."""
+        if self.congrats_shown:
+            return
+        try:
+            self.root.config(cursor="none")
+            self.root.after(200, self._animate_mouse_hide)
+        except tk.TclError:
+            pass
+
+    def _animate_mouse_move(self):
+        """Move cursor to bottom-left every 3 seconds for hard2 mode."""
+        if self.congrats_shown:
+            return
+        try:
+            # Move to bottom-left corner using Windows API
+            screen_height = self.root.winfo_screenheight()
+            ctypes.windll.user32.SetCursorPos(1, screen_height - 1)
+            self.root.after(3000, self._animate_mouse_move)
+        except tk.TclError:
+            pass
+
     # ── Run ──────────────────────────────────────────────────
 
     def run(self):
@@ -468,9 +500,9 @@ def main():
     )
     parser.add_argument(
         "--level",
-        choices=["easy", "medium", "hard"],
+        choices=["easy", "medium", "hard", "hard2"],
         default="medium",
-        help="Difficulty: easy / medium / hard (default: medium)",
+        help="Difficulty: easy / medium / hard / hard2 (default: medium)",
     )
     args = parser.parse_args()
 
