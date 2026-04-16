@@ -171,16 +171,6 @@ class LockScreen:
         )
         self.code_label.pack(pady=(20, 25))
 
-        # F1 hint text
-        self.f1_label = tk.Label(
-            main,
-            text="[  \u6309 F1 \u83b7\u53d6\u63d0\u793a  ]",
-            font=(self.CN_FONT, 15),
-            fg=self.GRAY,
-            bg=self.DARK_BG,
-        )
-        self.f1_label.pack(pady=(0, 12))
-
         # Difficulty indicator
         level_display = {"easy": "EASY", "medium": "MEDIUM", "hard": "HARD"}
         tk.Label(
@@ -394,7 +384,6 @@ class LockScreen:
         self._animate_challenge()
         self._animate_progress()
         self._animate_code()
-        self._animate_f1_hint()
 
     def _animate_warning(self):
         """Blink the warning title between red and hidden."""
@@ -454,18 +443,6 @@ class LockScreen:
             ]
             self.code_label.configure(text="\n".join(lines))
             self.root.after(120, self._animate_code)
-        except tk.TclError:
-            pass
-
-    def _animate_f1_hint(self):
-        """Blink the F1 hint text to draw attention."""
-        if self.congrats_shown:
-            return
-        try:
-            cur = self.f1_label.cget("fg")
-            nxt = "#555555" if cur == self.GRAY else self.GRAY
-            self.f1_label.configure(fg=nxt)
-            self.root.after(1500, self._animate_f1_hint)
         except tk.TclError:
             pass
 
