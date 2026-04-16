@@ -34,16 +34,16 @@ class LockScreen:
     CONGRATS_BG = "#001a00"
 
     FAKE_STATUSES = [
-        "Encrypting files...",
-        "Scanning vulnerabilities...",
-        "Stealing browser data...",
-        "Uploading sensitive data...",
-        "Infecting USB devices...",
-        "Modifying registry...",
-        "Installing backdoor...",
-        "Disabling antivirus...",
-        "Corrupting boot sector...",
-        "Hijacking network...",
+        "Encrypting files...          \u52a0\u5bc6\u6587\u4ef6\u4e2d...",
+        "Scanning vulnerabilities...   \u626b\u63cf\u7cfb\u7edf\u6f0f\u6d1e\u4e2d...",
+        "Stealing browser data...      \u7a83\u53d6\u6d4f\u89c8\u5668\u6570\u636e\u4e2d...",
+        "Uploading sensitive data...   \u4e0a\u4f20\u654f\u611f\u6570\u636e\u4e2d...",
+        "Infecting USB devices...      \u611f\u67d3USB\u8bbe\u5907\u4e2d...",
+        "Modifying registry...         \u4fee\u6539\u6ce8\u518c\u8868\u4e2d...",
+        "Installing backdoor...        \u5b89\u88c5\u540e\u95e8\u7a0b\u5e8f\u4e2d...",
+        "Disabling antivirus...        \u7981\u7528\u6740\u6bd2\u8f6f\u4ef6\u4e2d...",
+        "Corrupting boot sector...     \u7834\u574f\u542f\u52a8\u6247\u533a\u4e2d...",
+        "Hijacking network...          \u52ab\u6301\u7f51\u7edc\u4e2d...",
     ]
 
     CN_FONT = "Microsoft YaHei"
@@ -52,7 +52,7 @@ class LockScreen:
     def __init__(self, level="medium"):
         self.level = level
         self.root = tk.Tk()
-        self.root.title("WARNING - VIRUS DETECTED")
+        self.root.title("WARNING - VIRUS DETECTED - \u8b66\u544a - \u68c0\u6d4b\u5230\u75c5\u6bd2")
         self.root.configure(bg=self.DARK_BG)
         self.congrats_shown = False
         self._progress_value = 0.0
@@ -106,7 +106,16 @@ class LockScreen:
             fg=self.RED,
             bg=self.DARK_BG,
         )
-        self.warning_label.pack(pady=(0, 15))
+        self.warning_label.pack(pady=(0, 5))
+
+        # Chinese translation of warning
+        tk.Label(
+            main,
+            text="\u75c5\u6bd2\u5df2\u68c0\u6d4b\u5230",
+            font=(self.CN_FONT, 20),
+            fg=self.DARK_RED,
+            bg=self.DARK_BG,
+        ).pack(pady=(0, 15))
 
         # Skull decoration
         tk.Label(
@@ -133,8 +142,8 @@ class LockScreen:
         # Fake status line
         self.status_label = tk.Label(
             main,
-            text="Initializing...",
-            font=(self.MONO_FONT, 15),
+            text="Initializing...  \u521d\u59cb\u5316\u4e2d...",
+            font=(self.CN_FONT, 14),
             fg=self.ORANGE,
             bg=self.DARK_BG,
         )
@@ -300,7 +309,7 @@ class LockScreen:
 
     def _on_hard_close_attempt(self):
         messagebox.showwarning(
-            "ACCESS DENIED",
+            "ACCESS DENIED - \u8bbf\u95ee\u88ab\u62d2\u7edd",
             "\u54c8\u54c8, \u6ca1\u90a3\u4e48\u5bb9\u6613!\n\u518d\u60f3\u60f3\u5176\u4ed6\u529e\u6cd5\u5427~",
         )
 
